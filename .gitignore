@@ -54,3 +54,9 @@ pids
 
 # Test outputs (but NOT actual test files)
 test-results/
+
+# Ignore compiled JS files
+*.js
+*.js.map
+*.d.ts
+dist/
