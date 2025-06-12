@@ -11,14 +11,16 @@ import { initSocket } from "./socketServer";
 
 import authRouter from "./routes/auth.route";
 import userRouter from "./routes/user.route";
-import errorHandler from "./middlewares/errorHandler";
 import eventRouter from "./routes/event.route";
 import ticketRouter from "./routes/ticket.route";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 connectDB();
 
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || "3000", 10);
+
+app.disable("x-powered-by");
 
 app.use(express.json());
 app.use(
@@ -34,7 +36,7 @@ app.use("/api", userRouter);
 app.use("/api", eventRouter);
 app.use("/api", ticketRouter);
 
-app.use(errorHandler);
+app.use(globalErrorHandler);
 
 const server = http.createServer(app);
 initSocket(server);

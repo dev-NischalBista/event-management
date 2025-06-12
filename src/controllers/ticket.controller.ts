@@ -2,41 +2,51 @@ import { Request, Response } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import { eventService } from "../services/event.service";
 import { getIO } from "../socketServer";
-import Ticket from "../models/ticket.model";
+import {
+  buildErrorMessage,
+  buildSuccessMessage,
+} from "../utils/responseBuilder";
 import { ticketService } from "../services/ticket.service";
 
 const bookTicket = asyncHandler(async (req: Request, res: Response) => {
   const { eventId } = req.params;
   const { userId, type = "standard" } = req.body;
 
-  const event = await eventService.findEventById(eventId);
+  const event = await eventService.getEventById(eventId);
 
   if (!event) {
-    res.status(404).json({ message: "No event found!" });
+    res.status(404).json(buildErrorMessage(404, "No Event Found!"));
     return;
   }
 
   const now = Date.now();
 
   if (now < event.registrationStart.getTime()) {
-    res.status(400).json({ message: "Registration has not started yet." });
+    res
+      .status(400)
+      .json(buildErrorMessage(400, "Registration has not started yet!"));
     return;
   } else if (now > event.registrationEnd.getTime()) {
-    res.status(400).json({ message: "Registration has ended." });
+    res.status(400).json(buildErrorMessage(400, "Registration has ended!"));
     return;
   }
 
   if (event.attendees.length >= event.capacity) {
-    res.status(400).json({ message: "Event is fully Booked!" });
+    res.status(400).json(buildErrorMessage(400, "Event is fully booked!"));
     return;
   }
 
-  const existingTicket = await Ticket.findOne({ userId, eventId });
+  const existingTicket = await ticketService.getTicket(userId, eventId);
 
   if (existingTicket) {
     res
       .status(400)
-      .json({ message: "You have already booked a ticket for this event." });
+      .json(
+        buildErrorMessage(
+          400,
+          "You have already booked a ticket for this event."
+        )
+      );
     return;
   }
 
@@ -44,13 +54,13 @@ const bookTicket = asyncHandler(async (req: Request, res: Response) => {
   const ticketPrice = pricing[type];
 
   if (typeof ticketPrice !== "number") {
-    res.status(400).json({ message: "Invalid ticket type" });
+    res.status(400).json(buildErrorMessage(400, "Invalid Ticket Type!"));
     return;
   }
 
-  const ticket = await Ticket.create({
-    userId,
+  const ticket = await ticketService.bookTicket({
     eventId,
+    userId,
     type,
     price: ticketPrice,
     isValid: true,
@@ -66,21 +76,17 @@ const bookTicket = asyncHandler(async (req: Request, res: Response) => {
     capacityLeft: event.capacity - event.attendees.length,
   });
 
-  res.status(201).json({
-    message: "Ticket booked successfully",
-    ticket,
-  });
+  res
+    .status(201)
+    .json(buildSuccessMessage(200, "Ticket Created Successfully", ticket));
 });
 
-const getUserTickets = asyncHandler(async (req: Request, res: Response) => {});
-
 const getBookedTickets = asyncHandler(async (req: Request, res: Response) => {
-  const tickets = await ticketService.getAllTickets();
+  const tickets = await ticketService.getTickets();
 
-  res.status(200).json({
-    message: "Tickets fetched Successfully",
-    tickets: tickets,
-  });
+  res
+    .status(200)
+    .json(buildSuccessMessage(200, "Tickets fetched Successfully!", tickets));
   return;
 });
 

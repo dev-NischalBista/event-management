@@ -1,8 +1,8 @@
 import { ObjectId, Schema, model } from "mongoose";
 
-interface ITicket {
-  eventId: ObjectId;
-  userId: ObjectId;
+export interface ITicket {
+  eventId: ObjectId | string;
+  userId: ObjectId | string;
   type: "standard" | "premium" | "vip";
   price: number;
   seatNo?: string;

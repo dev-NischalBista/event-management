@@ -46,5 +46,11 @@ pids
 # Jest cache
 .jest/
 
+# Ignore all test files
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+
 # Test outputs (but NOT actual test files)
 test-results/

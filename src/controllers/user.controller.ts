@@ -1,18 +1,22 @@
 import { Request, Response, RequestHandler } from "express";
-import User from "../models/user.model";
 import { verifyAccessToken } from "../utils/jwt";
 import asyncHandler from "../utils/asyncHandler";
+import {
+  buildErrorMessage,
+  buildSuccessMessage,
+} from "../utils/responseBuilder";
+import { userService } from "../services/user.service";
 
 const getUsers = asyncHandler(async (req: Request, res: Response) => {
-  const users = await User.find({}, "-password -__v").sort({ createdAt: -1 });
-  res.status(200).json(users);
+  const users = userService.getUsers();
+  res.status(200).json(buildSuccessMessage(200, "Users", users));
 });
 
 const getByUserId = asyncHandler(async (req: Request, res: Response) => {
   const token = req.cookies.AccessToken;
 
   if (!token) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json(buildErrorMessage(401, "Unauthorized"));
     return;
   }
 
@@ -21,18 +25,13 @@ const getByUserId = asyncHandler(async (req: Request, res: Response) => {
   const userId = decoded?._id;
 
   if (!userId) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json(buildErrorMessage(401, "Unauthorized"));
     return;
   }
 
-  const user = await User.findById(userId, "-password -__v");
+  const user = await userService.getUserById(userId);
 
-  if (!user) {
-    res.status(404).json({ message: "User not found" });
-    return;
-  }
-
-  res.status(200).json({ message: "User Details", user: user });
+  res.status(200).json(buildSuccessMessage(200, "User Details", user));
 });
 
 export const userController = {

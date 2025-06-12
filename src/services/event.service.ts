@@ -1,25 +1,23 @@
 import Event from "../models/event.model";
 
-const fetchAllEvents = async () => {
-  return await Event.find().sort({ createdAt: -1 }).exec();
-};
+class EventService {
+  constructor() {}
 
-const findEventById = async (eventId: string) => {
-  return await Event.findById(eventId).exec();
-};
+  async getEvents() {
+    return await Event.find().sort({ createdAt: -1 }).exec();
+  }
 
-const findEventByTitle = async (title: string) => {
-  return await Event.findOne({ title }).exec();
-};
+  async getEventById(eventId: string) {
+    return await Event.findById(eventId).exec();
+  }
 
-const createEvent = async (eventData: Event) => {
-  const newEvent = new Event(eventData);
-  return await newEvent.save();
-};
+  async getEventByTitle(title: string) {
+    return await Event.findOne({ title }).exec();
+  }
 
-export const eventService = {
-  fetchAllEvents,
-  findEventById,
-  findEventByTitle,
-  createEvent,
-};
+  async addEvent(data: Event) {
+    return await Event.create(data);
+  }
+}
+
+export const eventService = new EventService();
