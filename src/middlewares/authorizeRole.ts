@@ -1,5 +1,6 @@
 import { Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "./authenticateUser";
+import { buildErrorMessage } from "../utils/responseBuilder";
 
 const authorizeRole = (roles: string[]) => {
   return (
@@ -10,7 +11,7 @@ const authorizeRole = (roles: string[]) => {
     const user = req.user;
 
     if (!user || !roles.includes(user.role)) {
-      res.status(403).json({ message: "Forbidden: Access denied" });
+      res.status(403).json(buildErrorMessage(403, "Forbidden: Access denied"));
       return;
     }
 

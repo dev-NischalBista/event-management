@@ -7,9 +7,10 @@ import { eventSchema } from "../validators/event.schema";
 
 const eventRouter = Router();
 
-eventRouter.get("/events", authenticateUser, eventController.getEvents);
+eventRouter.get("/all", authenticateUser, eventController.getEvents);
+
 eventRouter.post(
-  "/events",
+  "/new",
   validate(eventSchema),
   authenticateUser,
   authorizeRole(["admin"]),

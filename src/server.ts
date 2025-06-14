@@ -3,17 +3,18 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import http from "http";
-import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db";
 import { initSocket } from "./socketServer";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 import authRouter from "./routes/auth.route";
 import userRouter from "./routes/user.route";
 import eventRouter from "./routes/event.route";
 import ticketRouter from "./routes/ticket.route";
-import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 connectDB();
 
@@ -22,6 +23,7 @@ const PORT: number = parseInt(process.env.PORT || "3000", 10);
 
 app.disable("x-powered-by");
 
+app.use(helmet());
 app.use(express.json());
 app.use(
   cors({
@@ -31,10 +33,10 @@ app.use(
 );
 app.use(cookieParser());
 
-app.use("/auth", authRouter);
-app.use("/api", userRouter);
-app.use("/api", eventRouter);
-app.use("/api", ticketRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/event", eventRouter);
+app.use("/api/v1/ticket", ticketRouter);
 
 app.use(globalErrorHandler);
 

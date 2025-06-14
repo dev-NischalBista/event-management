@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { verifyAccessToken } from "../utils/jwt";
+import { buildErrorMessage } from "../utils/responseBuilder";
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
@@ -13,7 +14,9 @@ const authenticateUser = (
   const token = req.cookies.AccessToken;
 
   if (!token) {
-    return res.status(401).json({ message: "Access token is missing" });
+    return res
+      .status(401)
+      .json(buildErrorMessage(401, "Access Token Missing!"));
   }
 
   try {
@@ -21,7 +24,9 @@ const authenticateUser = (
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res
+      .status(401)
+      .json(buildErrorMessage(401, "Invalid or expired token"));
   }
 };
 

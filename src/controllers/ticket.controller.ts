@@ -81,8 +81,30 @@ const bookTicket = asyncHandler(async (req: Request, res: Response) => {
     .json(buildSuccessMessage(200, "Ticket Created Successfully", ticket));
 });
 
-const getBookedTickets = asyncHandler(async (req: Request, res: Response) => {
+const getTickets = asyncHandler(async (req: Request, res: Response) => {
   const tickets = await ticketService.getTickets();
+
+  res
+    .status(200)
+    .json(buildSuccessMessage(200, "Tickets fetched Successfully!", tickets));
+  return;
+});
+
+const getEventTickets = asyncHandler(async (req: Request, res: Response) => {
+  const { eventId } = req.params;
+
+  const tickets = await ticketService.getEventTickets(eventId);
+
+  res
+    .status(200)
+    .json(buildSuccessMessage(200, "Tickets fetched Successfully!", tickets));
+  return;
+});
+
+const getUserTickets = asyncHandler(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  const tickets = await ticketService.getUserTickets(userId);
 
   res
     .status(200)
@@ -92,5 +114,7 @@ const getBookedTickets = asyncHandler(async (req: Request, res: Response) => {
 
 export const ticketController = {
   bookTicket,
-  getBookedTickets,
+  getTickets,
+  getEventTickets,
+  getUserTickets,
 };

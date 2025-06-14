@@ -6,15 +6,12 @@ class UserService {
 
   async getUsers() {
     const users = await User.find({}, "-password -__v").sort({ createdAt: -1 });
+
     return users;
   }
 
   async getUserByEmail(email: string) {
     const user = await User.findOne({ email });
-
-    if (!user) {
-      throw new AppError("User not found!", 404);
-    }
 
     return user;
   }

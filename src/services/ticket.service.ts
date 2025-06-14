@@ -8,8 +8,24 @@ class TicketService {
     return tickets;
   }
 
+  async getEventTickets(eventId: string) {
+    const tickets = await Ticket.find({ eventId })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return tickets;
+  }
+
+  async getUserTickets(userId: string) {
+    const tickets = await Ticket.find({ userId })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return tickets;
+  }
+
   async getTicket(userId: string, eventId: string) {
-    const ticket = await Ticket.find({ userId, eventId });
+    const ticket = await Ticket.findOne({ userId, eventId });
 
     return ticket;
   }

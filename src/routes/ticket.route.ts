@@ -2,20 +2,37 @@ import { Router } from "express";
 import authenticateUser from "../middlewares/authenticateUser";
 import { ticketController } from "../controllers/ticket.controller";
 import authorizeRole from "../middlewares/authorizeRole";
+import validate from "../middlewares/validate";
+import { ticketSchema } from "../validators/ticket.schema";
 
 const ticketRouter = Router();
 
 ticketRouter.post(
-  "/tickets/:eventId/getTicket",
+  "/:eventId/book",
+  validate(ticketSchema),
   authenticateUser,
   ticketController.bookTicket
 );
 
 ticketRouter.get(
-  "/tickets",
+  "/event/:eventId",
   authenticateUser,
   authorizeRole(["admin"]),
-  ticketController.getBookedTickets
+  ticketController.getEventTickets
+);
+
+ticketRouter.get(
+  "/user/:userId",
+  authenticateUser,
+  authorizeRole(["admin"]),
+  ticketController.getUserTickets
+);
+
+ticketRouter.get(
+  "/booked-tickets",
+  authenticateUser,
+  authorizeRole(["admin"]),
+  ticketController.getTickets
 );
 
 export default ticketRouter;

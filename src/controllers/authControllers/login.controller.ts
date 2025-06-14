@@ -39,14 +39,14 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
   res.cookie("AccessToken", token, {
     httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 60 * 15 * 1000,
   });
 
   res.cookie("RefreshToken", refreshToken, {
     httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
   });

@@ -6,13 +6,14 @@ import authorizeRole from "../middlewares/authorizeRole";
 const userRouter = Router();
 
 userRouter.get(
-  "/users",
+  "/all",
   authenticateUser,
   authorizeRole(["admin"]),
   userController.getUsers
 );
+
 userRouter.get(
-  "/users/me",
+  "/me",
   authenticateUser,
   authorizeRole(["admin", "user"]),
   userController.getByUserId
